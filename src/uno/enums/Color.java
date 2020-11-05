@@ -1,4 +1,4 @@
-package uno.card;
+package uno.enums;
 
 public enum Color {
     RED,

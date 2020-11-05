@@ -1,8 +1,9 @@
 package uno;
 
 import uno.card.Card;
-import uno.card.Color;
-import uno.card.Type;
+import uno.enums.Color;
+import uno.enums.Type;
+import uno.exceptions.EmptyDeckException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,8 @@ public class Deck {
 
     private ArrayList<Card> cards = new ArrayList<Card>();
 
+    private ArrayList<Card> rejected = new ArrayList<Card>();
+
     public Deck() {
         cards = new ArrayList<Card>();
         random = new Random();
@@ -37,13 +40,18 @@ public class Deck {
      * Returns a card from the top of the deck
      * @return Card
      */
-    public Card draw() {
+    public Card draw() throws EmptyDeckException {
 
         if (cards.size() == 0) {
-            return null;
+            throw new EmptyDeckException();
         }
 
         return cards.remove(0);
+    }
+
+    public Deck discard(Card card) {
+        rejected.add(card);
+        return this;
     }
 
     private void initializeDeck() {
