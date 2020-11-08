@@ -43,6 +43,10 @@ public class Hand {
         return card;
     }
 
+    public boolean hasMoreCards() {
+        return cards.size() > 0;
+    }
+
     public Color pickColor() {
         Color color = getAvailableColor();
 

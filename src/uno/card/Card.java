@@ -1,6 +1,7 @@
 package uno.card;
 
 import uno.enums.Color;
+import uno.enums.Direction;
 import uno.enums.Type;
 
 public class Card {
@@ -108,5 +109,17 @@ public class Card {
 
     public boolean isWild() {
         return cardType.isWild();
+    }
+
+    public boolean shouldNextPlayerDraw() {
+        return cardType.isDrawable();
+    }
+
+    public Direction getGameDirection() {
+        if (cardType == Type.REVERSE) {
+            return Direction.BACKWARDS;
+        }
+
+        return Direction.FORWARDS;
     }
 }

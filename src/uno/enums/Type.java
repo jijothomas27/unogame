@@ -34,4 +34,20 @@ public enum Type {
     public int getDrawableCardCount() {
         return drawableCardCount;
     }
+
+    public boolean isDrawable() {
+        return this == DRAW2 || this == WILD_DRAW4;
+    }
+
+    public int numberOfCardsToDraw() {
+        if (this == DRAW2) {
+            return 2;
+        }
+
+        if (this == WILD_DRAW4) {
+            return 4;
+        }
+
+        return 0;
+    }
 }
