@@ -54,16 +54,20 @@ public class Game {
     }
 
     public void play() {
-        tellCurrentCard();
 
+        int round = 1;
         try {
             while(true) {
+                showHands(round);
+
+                tellCurrentCard();
                 Card playedCard = currentPlayer.play(this);
 
                 /* current player has no card to play. so draw one from deck */
                 if (playedCard == null) {
                     Card card = deck.draw();
                     currentPlayer.addCard(card);
+                    displayMessage(String.format("Player: %s drew a card", currentPlayer.getPlayerName()));
 
                     /* try again */
                     playedCard = currentPlayer.play(this);
@@ -87,10 +91,14 @@ public class Game {
                     makeNextPlayerDrawCards();
 
                     currentDirection = currentCard.getGameDirection();
+                    advancePlayer();
+                } else {
+                    displayMessage(String.format("Player: %s passed their turn", currentPlayer.getPlayerName()));
+                    advanceFromPassedPlayer();
                 }
 
-                advancePlayer();
-
+                displayMessage(String.format("\n\n---- End of Round %d ----", round));
+                round += 1;
             }
         } catch (EmptyDeckException emptyDeckException) {
             System.out.println("Deck is empty. Game is drawn!");
@@ -107,12 +115,37 @@ public class Game {
         return players.get(position);
     }
 
-    public Hand advancePlayer() {
-                           /* forwards = 1, back = -1 */    /* if skippable, jump one player */
-        int movePlayerBy = currentDirection.value()     *   (currentCard.getCardType().isSkippable() ? 2 : 1);
+    /**
+     * When a player passes his turn, the next player should not be determined by previous card.
+     * @return
+     */
+    private Hand advanceFromPassedPlayer() {
+        currentPlayerPosition = getNextPlayerPosition(1, currentDirection);
+        currentPlayer = players.get(currentPlayerPosition);
+
+        return currentPlayer;
+    }
+
+    private int getNextPlayerPosition(int advancyBy, Direction direction) {
+        int movePlayerBy = direction.value() * advancyBy;
+        int currentPosition = currentPlayerPosition;
         int totalPlayers = players.size();
 
-        currentPlayerPosition = Math.abs(currentPlayerPosition + movePlayerBy) % totalPlayers;
+        int newPosition = currentPosition + movePlayerBy;
+        if (newPosition < 0 ) {
+            currentPosition = totalPlayers + newPosition;
+
+        } else {
+            currentPosition = newPosition % totalPlayers;
+        }
+
+        return currentPosition;
+    }
+
+    public Hand advancePlayer() {
+
+        int advanceBy = currentCard.getCardType().isSkippable() ? 2 : 1;
+        currentPlayerPosition = getNextPlayerPosition(advanceBy, currentDirection);
         currentPlayer = players.get(currentPlayerPosition);
 
         return currentPlayer;
@@ -175,5 +208,13 @@ public class Game {
 
     private void displayMessage(String message) {
         System.out.println(message);
+    }
+
+    private void showHands(int round) {
+        displayMessage(String.format("---- Round %d -----", round));
+        for (Hand player : players) {
+            displayMessage(player.toString());
+        }
+        displayMessage("\n\n");
     }
 }
